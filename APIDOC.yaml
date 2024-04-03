@@ -552,3 +552,16 @@ paths:
                   remainingPayment: 800000
         '400':
           description: Invalid userID
+components:
+  securitySchemes:
+    xyz_auth:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://xyz-auth-server.com/authorize
+          tokenUrl: https://xyz-auth-server.com/token
+          scopes:
+            read: Read access to your data
+            write: Write access to your data
+security:
+  - xyz_auth: []
