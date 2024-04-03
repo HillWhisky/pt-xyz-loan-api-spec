@@ -4,7 +4,10 @@ info:
   version: 1.0.0
   description: API for PT XYZ's mobile loan application.
 servers:
+  - url: https://dev.xyz.com
+    description: "Sandbox"
   - url: https://api.xyz.com
+    description: "Production"
 tags:
   - name: User
     description: Register and manage user data
