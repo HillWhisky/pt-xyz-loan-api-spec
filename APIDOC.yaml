@@ -1,0 +1,554 @@
+openapi: 3.1.0
+info:
+  title: PT XYZ Loan Application API
+  version: 1.0.0
+  description: API for PT XYZ's mobile loan application.
+servers:
+  - url: https://api.xyz.com
+tags:
+  - name: User
+    description: Register and manage user data
+  - name: Loan
+    description: Check latest loan offer
+  - name: Loan Application
+    description: Submit loan
+  - name: Loan Payment
+    description: Pay loan
+paths:
+  /register-user:
+    post:
+      tags:
+        - User 
+      summary: Create a new user account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - firstName
+                - lastName
+                - gender
+                - birthDate
+                - idNumber
+                - address
+                - phoneNumber
+                - email
+                - password
+                - confirmPassword
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  examples: ["John"]
+                lastName:
+                  type: string
+                  examples: ["Doe"]
+                gender:
+                  type: string
+                  enum:
+                    - Male
+                    - Female 
+                  examples: ["Doe"]
+                birthDate:
+                  format: date
+                  examples: ["2000-04-03"]
+                idNumber: 
+                  type: string
+                  description: "KTP"
+                  examples: ["1234567890"]
+                address:
+                  type: string
+                  examples: ["Street X, No. 1"] 
+                phoneNumber:
+                  type: string
+                  examples: ["81234567890"]
+                email:
+                  type: string
+                  examples: ["john.doe@mail.com"]
+                password:
+                  type: string
+                  examples: ["Abcd1234!"]
+                confirmPassword:
+                  type: string
+                  examples: ["Abcd1234!"]
+      responses:
+        '200':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userID:
+                    type: integer
+                    examples: ["101"]
+                  message:
+                    type: string
+                    examples: ["Register Successfully"]
+        '400':
+          description: Bad request (e.g., missing data)
+  /user:
+    get:
+      tags:
+        - User 
+      summary: Get user account data
+      parameters:
+        - name: userID
+          in: query 
+          description: Generated ID from Register User Account
+          required: false
+          schema:
+            type: integer
+        - name: phoneNumber
+          in: query 
+          required: false
+          schema:
+            type: string
+        - name: name
+          in: query
+          description: User name, can be firstName, lastName or both
+          required: false
+          schema:
+            type: string 
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userID:
+                    type: integer
+                    examples: ["101"]
+                  firstName:
+                    type: string
+                    examples: ["John"]
+                  lastName:
+                    type: string
+                    examples: ["Doe"]
+                  gender:
+                    type: string
+                    enum:
+                    - Male
+                    - Female
+                    examples: ["Male"]
+                  birthDate:
+                    format: date
+                    examples: ["2000-04-03"]
+                  idNumber: 
+                    type: string
+                    description: "KTP"
+                    examples: ["1234567890"]
+                  address:
+                    type: string
+                    examples: ["Street X, No. 1"] 
+                  phoneNumber:
+                    type: string
+                    examples: ["81234567890"]
+                  email:
+                    type: string
+                    examples: ["john.doe@mail.com"]
+        '400':
+          description: Invalid userID
+  /update-user:
+    put:
+      tags:
+        - User 
+      summary: Update user data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - userID
+                - firstName
+                - lastName
+                - gender
+                - birthDate
+                - idNumber
+                - address
+                - phoneNumber
+                - email
+              type: object
+              properties:
+                userID:
+                  type: integer
+                  examples: ["101"]
+                firstName:
+                  type: string
+                  examples: ["John"]
+                lastName:
+                  type: string
+                  examples: ["Doe"]
+                gender:
+                  type: string
+                  enum:
+                    - Male
+                    - Female 
+                  examples: ["Doe"]
+                birthDate:
+                  format: date
+                  examples: ["2000-04-03"]
+                idNumber: 
+                  type: string
+                  description: "KTP"
+                  examples: ["1234567890"]
+                address:
+                  type: string
+                  examples: ["Street X, No. 1"] 
+                phoneNumber:
+                  type: string
+                  examples: ["81234567890"]
+                email:
+                  type: string
+                  examples: ["john.doe@mail.com"]
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userID:
+                    type: integer
+                    examples: ["101"]
+                  message:
+                    type: string
+                    examples: ["Update Successfully"]
+        '400':
+          description: Bad request (e.g., missing data)
+  /loan-offer-list:
+    get:
+      tags:
+        - Loan 
+      summary: Get loan offer list
+      parameters:
+        - name: userID
+          in: query 
+          description: User unique ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    offerID:
+                      type: integer
+                    offerName:
+                      type: string
+                    description:
+                      type: string
+              example:
+                - offerID: 1
+                  offerName: "Personal Loan"
+                  description: "Fulfill your needs"
+                - offerID: 2
+                  offerName: "Student Loan"
+                  description: "Special for education expenses"
+                - offerID: 3
+                  offerName: "Business Loan"
+                  description: "Boost your business"                  
+        '400':
+          description: Invalid userID
+  /loan-offer-detail:
+    get:
+      tags:
+        - Loan 
+      summary: Get loan offer detail
+      parameters:
+        - name: offerID
+          in: query 
+          description: Loan offer unique ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  offerID:
+                    type: integer
+                    examples: [1]
+                  offerName:
+                    type: string
+                    examples: ["Personal Loan"]
+                  description:
+                    type: string
+                    examples: ["Fulfill your needs"]
+                  repaymentTerm:
+                    type: integer
+                    examples: [12]
+                    enum:
+                      - 12
+                      - 24
+                      - 36
+                  interestRate:
+                    type: object
+                    properties:
+                      interestRate:
+                        type: number
+                        description: "Interest percentage"
+                        examples: [0.5]
+                      administrationFee:
+                        type: number
+                        description: "Pergentage of the loan amount"
+                        examples: [1]
+                      latePaymentFee:
+                        type: number
+                        description: "Percentage of the loan amount"
+                        examples: [5]
+                  requirement:
+                    type: object
+                    properties:
+                      flagStaffID:
+                        type: boolean
+                        description: "Staff / Employee ID requirement"
+                        examples: [true]
+                      minimumIncome:
+                        type: number
+                        description: "Minimum income to take the loan"
+                        examples: [2000000]
+                      flagIndonesianCitizens:
+                        type: boolean
+                        description: "Indonesia citizen requirement"
+                        examples: [true]
+        '400':
+          description: Invalid offerID
+  /submit-loan:
+    post:
+      tags:
+        - Loan Application
+      summary: Submit loan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - userID
+                - offerID
+                - loanAmount
+                - loanDate
+              type: object
+              properties:
+                userID:
+                  type: integer
+                  examples: [101]
+                offerID:
+                  type: integer
+                  examples: [2]
+                loanAmount:
+                  type: number
+                  examples: [1000000]
+                loanDate:
+                  format: date
+                  examples: ["2024-04-03"]
+      responses:
+        '200':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loanID:
+                    type: integer
+                    examples: ["LN101ZXCV"]
+                  message:
+                    type: string
+                    examples: ["Submit loan Successfully"]
+        '400':
+          description: Bad request (e.g., missing data)
+  /get-loan-detail:
+    get:
+      tags:
+        - Loan Application 
+      summary: Get submitted loan data
+      parameters:
+        - name: loanID
+          in: query 
+          description: Generated ID from Submit Loan
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                required:
+                - loanID
+                - fullName
+                - status
+                - loanAmmount
+                - submitDate
+                type: object
+                properties:
+                  loanID:
+                    type: integer
+                    examples: ["101"]
+                  fullName:
+                    type: string
+                    examples: ["John Doe"]
+                  status:
+                    type: string
+                    enum:
+                    - Pending
+                    - Approved
+                    - Rejected
+                    examples: ["Male"]
+                  loanAmmount:
+                    format: number
+                    description: Submitted loan amount
+                    examples: [1000000]
+                  paidAmount: 
+                    type: number
+                    description: "Paid loan amount"
+                    examples: [null]
+                  submitDate:
+                    format: date-time
+                    examples: ["2024-04-03 12:00:00"] 
+                  editDate:
+                    format: date-time
+                    examples: [null] 
+        '400':
+          description: Invalid loanID
+  /loan-payment-list:
+    get:
+      tags:
+        - Loan Payment 
+      summary: Get available loan payment list
+      parameters:
+        - name: loanID
+          in: query 
+          description: Generated ID from Submit Loan
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    paymentID:
+                      type: integer
+                    paymentName:
+                      type: string
+              example:
+                - paymentID: 1
+                  paymentName: "Personal Loan"
+                - paymentID: 2
+                  paymentName: "Virtual Account"
+        '400':
+          description: Invalid loanID
+  /submit-payment:
+    post:
+      tags:
+        - Loan Payment 
+      summary: Submit loan payment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - loanID
+                - paymentID
+                - paymentTotal
+              type: object
+              properties:
+                loanID:
+                  type: string
+                  description: "Generated ID from Submit Loan"
+                  examples: ["LN101ZXCV"]
+                paymentID:
+                  type: integer
+                  description: "Payment ID from Payment List"
+                  examples: [1]
+                paymentTotal:
+                  type: number
+                  examples: [200000]
+      responses:
+        '200':
+          description: Loan Payment submitted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loanPaymentID:
+                    type: string
+                    examples: ["PLN101ZXCV0001"]
+                  message:
+                    type: string
+                    examples: ["Loan Payment successfully"]
+        '400':
+          description: Bad request (e.g., missing data)
+  /payment-history:
+    get:
+      tags:
+        - Loan Payment 
+      summary: Get loan payment history
+      parameters:
+        - name: userID
+          in: query 
+          description: Generated ID from Register User Account
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    loanPaymentID:
+                      type: string
+                    loanPaymentDate:
+                      format: date-time
+                    paymentName:
+                      type: string
+                    paymentTotal:
+                      type: number
+                    paymentStatus:
+                      type: string
+                      enum:
+                        - Pending
+                        - Settlement
+                        - Expired
+                    remainingPayment:
+                      type: number
+              example:
+                - loanPaymentID: PLN101ZXCV0001
+                  loanPaymentDate: "2024-04-10 12:00:00"
+                  paymentName: "Bank Transfer"
+                  paymentTotal: 200000
+                  paymentStatus: "Settlement"
+                  remainingPayment: 800000
+        '400':
+          description: Invalid userID
